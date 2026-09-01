@@ -115,7 +115,7 @@ medical-ai-rag-system/
 
 ```bash
 # 1. Clone and enter
-git clone https://github.com/<your-username>/medical-ai-rag-system.git
+git clone https://github.com/<Saheed7>/medical-ai-rag-system.git
 cd medical-ai-rag-system
 
 # 2. Virtual environment

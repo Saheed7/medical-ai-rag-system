@@ -1,0 +1,38 @@
+# Local container runs. Mirrors the AWS App Runner configuration closely enough
+# to catch deployment problems before they reach the cloud.
+services:
+  medical-rag:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: medical-ai-rag-system:latest
+    container_name: medical-rag
+
+    ports:
+      - "8080:8080"
+
+    # Secrets are injected at runtime, never baked into an image layer.
+    # Anything committed to a layer is recoverable from the image, forever.
+    env_file:
+      - .env
+
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+    # App Runner's smallest useful instance is 1 vCPU / 2 GB. Matching it
+    # locally surfaces memory problems here rather than after deployment.
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2G

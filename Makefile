@@ -1,4 +1,4 @@
-.PHONY: help install install-dev index run test lint format ci docker-build docker-run clean
+.PHONY: help install install-dev index run test lint format ci docker-build docker-run docker-verify docker-size clean
 
 help:
 	@echo "install       Install runtime dependencies"
@@ -10,6 +10,7 @@ help:
 	@echo "format        Format with black + ruff --fix"
 	@echo "docker-build  Build the container image"
 	@echo "docker-run    Run the container locally on :8080"
+	@echo "docker-verify Staged checks on the built image"
 
 install:
 	pip install --upgrade pip && pip install -r requirements.txt
@@ -37,6 +38,12 @@ docker-build:
 
 docker-run:
 	docker run --rm -p 8080:8080 --env-file .env medical-ai-rag-system:latest
+
+docker-verify:
+	bash scripts/verify_docker.sh medical-ai-rag-system:latest
+
+docker-size:
+	docker image inspect medical-ai-rag-system:latest --format '{{.Size}}' | awk '{printf "image size: %.0f MB\n", $$1/1048576}'
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true

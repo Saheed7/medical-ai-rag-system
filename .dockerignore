@@ -1,17 +1,46 @@
+# ---- VCS & CI ----
 .git
+.gitignore
 .github
+
+# ---- Local environments ----
 .venv
 venv
+env
+
+# ---- Python artefacts ----
 __pycache__
 *.pyc
+*.pyo
+*.egg-info
 .pytest_cache
 .ruff_cache
 .coverage
 htmlcov
+
+# ---- Secrets: never bake credentials into a layer ----
+.env
+*.pem
+*.key
+
+# ---- Source corpus ----
+# The PDF is only needed to BUILD the index, which happens on the developer's
+# machine. Shipping a copyrighted 12 MB reference work inside the image would
+# bloat it and constitute redistribution.
+data/
+
+# ---- Local noise ----
 logs
 notebooks
+scripts
 tests
-.env
+Makefile
+Jenkinsfile
+docker-compose.yml
 *.md
 !README.md
 trivy-report.*
+
+# NOTE: vectorstore/ is deliberately NOT ignored. The prebuilt FAISS index is
+# copied into the image so containers start fast instead of spending ~20
+# minutes embedding on every cold start.
