@@ -1,4 +1,4 @@
-.PHONY: help install install-dev index run test lint format docker-build docker-run clean
+.PHONY: help install install-dev index run test lint format ci docker-build docker-run clean
 
 help:
 	@echo "install       Install runtime dependencies"
@@ -27,10 +27,10 @@ test:
 	pytest -v --cov=app --cov-report=term-missing
 
 lint:
-	ruff check app tests
+	ruff check app tests scripts
 
 format:
-	black app tests && ruff check --fix app tests
+	black app tests scripts && ruff check --fix app tests scripts
 
 docker-build:
 	docker build -t medical-ai-rag-system:latest .
@@ -41,3 +41,9 @@ docker-run:
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	rm -rf .pytest_cache .ruff_cache .coverage htmlcov
+
+# Mirror the CI 'quality' job exactly, so failures surface locally not on GitHub.
+ci:
+	ruff check app tests scripts
+	pytest -q --cov=app --cov-report=term-missing
+	python scripts/preflight_git.py

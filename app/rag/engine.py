@@ -69,7 +69,7 @@ def _to_citation(doc: Document, max_chars: int = 260) -> Citation:
 class RAGEngine:
     """Thread-safe, lazily initialised retrieval-augmented generation engine."""
 
-    _instance: "RAGEngine | None" = None
+    _instance: RAGEngine | None = None
     _lock = Lock()
 
     def __init__(self) -> None:
@@ -80,7 +80,7 @@ class RAGEngine:
 
     # -- lifecycle --------------------------------------------------------
     @classmethod
-    def instance(cls) -> "RAGEngine":
+    def instance(cls) -> RAGEngine:
         """Return the process-wide singleton, creating it if necessary."""
         if cls._instance is None:
             with cls._lock:
