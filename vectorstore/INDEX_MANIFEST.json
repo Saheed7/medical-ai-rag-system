@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "s3_uri": "s3://medical-rag-artifacts-saheed7/medical-ai-rag/index/v1/faiss_index.tar.gz",
+  "sha256": "b7c6f7b14c39fc8fce291df67c4f152295a714172b67b783957207527c40516d",
+  "size_bytes": 8445895,
+  "created_utc": "2026-09-01T21:36:42+00:00",
+  "vectors": 4932,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "chunk_size": 800,
+  "chunk_overlap": 120
+}
