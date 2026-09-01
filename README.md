@@ -1,5 +1,7 @@
 # Medical AI RAG System
+# Medical AI RAG System
 
+[![CI](https://github.com/Saheed7/medical-ai-rag-system/actions/workflows/ci.yml/badge.svg)](https://github.com/Saheed7/medical-ai-rag-system/actions/workflows/ci.yml)
 A production-oriented **Retrieval-Augmented Generation (RAG)** service that answers
 medical questions strictly from an indexed reference corpus (*The Gale Encyclopedia
 of Medicine*, 2nd ed.), returning **page-level citations** with every answer.
