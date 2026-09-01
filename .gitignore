@@ -1,0 +1,46 @@
+# ---- Secrets ----
+.env
+*.pem
+*.key
+credentials.json
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# ---- Testing / tooling ----
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# ---- Project artefacts ----
+logs/
+vectorstore/
+*.log
+trivy-report.*
+
+# ---- Source corpus ----
+# The Gale Encyclopedia of Medicine is a copyrighted commercial work.
+# Committing it to a public repository would be redistribution. The README
+# documents how to obtain it; the pipeline rebuilds the index from it locally.
+data/*.pdf
+!data/.gitkeep
+
+# ---- Editors / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- Model caches ----
+.cache/
+models/
