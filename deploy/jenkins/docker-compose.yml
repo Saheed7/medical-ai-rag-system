@@ -1,0 +1,50 @@
+# Local Jenkins controller.
+#
+# Note the absence of `privileged: true`. The host Docker socket is mounted
+# read-write so the Docker CLI inside can drive the host daemon (DooD).
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Match the host's docker group so the jenkins user can use the socket.
+        # Linux/macOS: getent group docker | cut -d: -f3
+        # Docker Desktop on Windows: leave the default.
+        DOCKER_GID: ${DOCKER_GID:-999}
+    image: medical-rag-jenkins:latest
+    container_name: medical-rag-jenkins
+
+    ports:
+      - "8090:8080"     # UI (8080 is taken by the app)
+      - "50000:50000"   # inbound agents
+
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # DooD: builds run on the host daemon.
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    # The mounted host socket is owned by a group that does not exist inside
+    # this image, so build-time group membership cannot grant access. group_add
+    # attaches the jenkins user to the socket's numeric GID at runtime instead.
+    #
+    # Find the correct value with:
+    #   docker exec medical-rag-jenkins stat -c '%g' /var/run/docker.sock
+    #
+    # On Docker Desktop (Windows/macOS) the socket is proxied and root-owned,
+    # so 0 is normal. On native Linux it is the host's docker group.
+    #
+    # This keeps Jenkins running as the unprivileged jenkins user rather than
+    # resorting to `user: root`. Socket access is still host-root-equivalent
+    # in effect - that is inherent to DooD, not a property of this setting.
+    group_add:
+      - "${DOCKER_SOCK_GID:-0}"
+
+    environment:
+      # Skip the setup wizard only after you have created an admin user.
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=true"
+
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
