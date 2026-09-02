@@ -102,7 +102,13 @@ pipeline {
                 script { env.FAILED_STAGE = 'Build image' }
                 sh '''
                     set -eu
+                    # --provenance/--sbom disabled: BuildKit attaches an
+                    # attestation that Trivy reads INSTEAD of the filesystem,
+                    # and it can report package versions that are not actually
+                    # in the image. Scanning the real layers is what we want.
                     docker build \
+                        --provenance=false \
+                        --sbom=false \
                         -t "${ECR_REPO}:${IMAGE_TAG}" \
                         -t "${ECR_REPO}:latest" \
                         .

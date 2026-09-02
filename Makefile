@@ -1,4 +1,4 @@
-.PHONY: help install install-dev index run test lint format ci docker-build docker-run docker-verify docker-size jenkins-up jenkins-down jenkins-password clean
+.PHONY: help install install-dev index run test lint format ci docker-build docker-run docker-verify docker-size trivy-scan jenkins-up jenkins-down jenkins-password clean
 
 help:
 	@echo "install       Install runtime dependencies"
@@ -11,6 +11,7 @@ help:
 	@echo "docker-build  Build the container image"
 	@echo "docker-run    Run the container locally on :8080"
 	@echo "docker-verify Staged checks on the built image"
+	@echo "trivy-scan    Run the same security gate CI runs, locally"
 
 install:
 	pip install --upgrade pip && pip install -r requirements.txt
@@ -34,10 +35,15 @@ format:
 	black app tests scripts && ruff check --fix app tests scripts
 
 docker-build:
-	docker build -t medical-ai-rag-system:latest .
+	docker build --provenance=false --sbom=false -t medical-ai-rag-system:latest .
 
 docker-run:
 	docker run --rm -p 8080:8080 --env-file .env medical-ai-rag-system:latest
+
+trivy-scan:
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.74.0 \
+		image --severity HIGH,CRITICAL --ignore-unfixed --scanners vuln \
+		medical-ai-rag-system:latest
 
 docker-verify:
 	bash scripts/verify_docker.sh medical-ai-rag-system:latest

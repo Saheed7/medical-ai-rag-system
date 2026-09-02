@@ -65,8 +65,29 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN groupadd --system --gid 1001 appgroup && \
     useradd --system --uid 1001 --gid appgroup --create-home appuser
 
+# The base image ships its own setuptools under /usr/local, separate from the
+# venv. Its vendored copies of jaraco.context and wheel carry CVE-2026-23949
+# and CVE-2026-24049. Upgrading in the builder stage does NOT fix this: PATH
+# points at /opt/venv there, so pip only touches the venv's copy. The system
+# interpreter must be targeted explicitly.
+RUN /usr/local/bin/python -m pip install --no-cache-dir --upgrade \
+        setuptools wheel && \
+    rm -rf /root/.cache/pip
+
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /opt/hf-cache /opt/hf-cache
+
+# pip is not needed at runtime: this container never installs packages. Removing
+# it drops its vendored dependency tree, including the CycloneDX SBOM at
+# pip/_vendor/bom.cdx.json. Trivy reads that manifest INSTEAD of the filesystem
+# and reports msgpack 1.1.2 and setuptools 70.3.0 - neither of which is actually
+# installed anywhere in this image. Deleting the code removes the finding at its
+# source rather than suppressing the alert.
+RUN /opt/venv/bin/python -m pip uninstall -y pip 2>/dev/null || true; \
+    rm -rf /opt/venv/lib/python3.11/site-packages/pip \
+           /opt/venv/lib/python3.11/site-packages/pip-*.dist-info \
+           /usr/local/lib/python3.11/site-packages/pip \
+           /usr/local/lib/python3.11/site-packages/pip-*.dist-info
 
 WORKDIR /app
 
