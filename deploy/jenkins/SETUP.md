@@ -1,6 +1,6 @@
 # Jenkins setup
 
-Everything here uses **your own** AWS, GitHub and Docker accounts. No
+Everything here uses **my own** AWS, GitHub and Docker accounts. No
 credential is written into a file — all secrets live in Jenkins' credential
 store and are injected at run time.
 

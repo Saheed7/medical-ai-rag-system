@@ -1,6 +1,10 @@
 -r requirements.txt
 
-pytest==8.3.4
-pytest-cov==6.0.0
-ruff==0.8.4
-black==24.10.0
+pytest>=8.3.4
+pytest-cov>=6.0.0
+ruff>=0.8.4
+black>=24.10.0
+
+# Patched setuptools: CVE-2025-47273 and vendored wheel CVE-2026-24049.
+setuptools>=78.1.1
+wheel>=0.46.0

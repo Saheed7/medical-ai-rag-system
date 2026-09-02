@@ -31,7 +31,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 # PyPI wheel drags in ~3 GB of CUDA libraries that are useless on App Runner
 # (no GPU). Installing the CPU build first means pip treats the dependency as
 # already satisfied when it resolves the rest.
-RUN pip install --upgrade pip && \
+# setuptools is upgraded alongside pip: the base image ships 70.3.0, which
+# carries CVE-2025-47273 (path traversal in PackageIndex) and vendors
+# wheel 0.45.1 with CVE-2026-24049 (code execution via a malicious wheel).
+# Both are flagged by the pipeline's Trivy gate.
+RUN pip install --upgrade pip setuptools wheel && \
     pip install torch --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .

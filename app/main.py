@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.logger import get_logger
 from app.rag.engine import get_engine
-from app.ui.gradio_app import build_interface
+from app.ui.gradio_app import CUSTOM_CSS, build_interface
 
 logger = get_logger(__name__)
 
@@ -54,7 +54,14 @@ def health() -> JSONResponse:
     return JSONResponse(content=payload, status_code=200 if engine.is_ready else 503)
 
 
-app = gr.mount_gradio_app(api, build_interface(), path="/")
+# Gradio 6 accepts theme and css here rather than on the Blocks constructor.
+app = gr.mount_gradio_app(
+    api,
+    build_interface(),
+    path="/",
+    theme=gr.themes.Soft(primary_hue="teal", secondary_hue="slate"),
+    css=CUSTOM_CSS,
+)
 
 
 def main() -> None:

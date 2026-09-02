@@ -1,24 +1,46 @@
 # ---- Core RAG stack ----
-langchain==0.3.27
-langchain-community==0.3.27
-langchain-core==0.3.75
-langchain-huggingface==0.3.1
-langchain-text-splitters==0.3.9
+# The umbrella `langchain` package is deliberately absent: nothing in this
+# codebase imports it, and it carried CVE-2026-44843 (insecure
+# deserialization). Removing an unused dependency beats patching it.
+langchain-core>=1.6.1
+langchain-community>=0.4.2
+langchain-huggingface>=1.2.2
+langchain-text-splitters>=1.0.0
+
+# langsmith >=0.8.18 fixes GHSA-f4xh-w4cj-qxq8 (arbitrary server-side file
+# read in TracingMiddleware). Pulled in transitively; pinned explicitly so the
+# floor is enforced rather than left to the resolver.
+langsmith>=0.12.1
 
 # ---- Embeddings & vector search ----
-sentence-transformers==3.3.1
-faiss-cpu==1.9.0.post1
-huggingface-hub==0.34.4
+sentence-transformers>=3.3.1
+faiss-cpu>=1.9.0
+huggingface-hub>=0.34.4
 
 # ---- Document parsing ----
-pypdf==5.1.0
+# >=6.14.2 fixes CVE-2026-59935 / CVE-2026-59936 (DoS via crafted PDF).
+pypdf>=6.16.2
 
 # ---- Web layer ----
-gradio==5.9.1
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
+# starlette >=1.1.0 fixes CVE-2025-62727 (DoS via Range header merging) and
+# CVE-2026-48818 (SSRF / NTLM credential theft via UNC paths). A current
+# fastapi is required to permit that starlette range.
+fastapi>=0.141.1
+starlette>=1.6.0
+uvicorn[standard]>=0.34.0
+# Gradio 6 removed Chatbot(type=...) and moved theme/css from the Blocks
+# constructor to mount_gradio_app(). The UI targets the 6.x API; the upper
+# bound prevents a future major release breaking it unannounced.
+gradio>=6.26.0,<7.0.0
+
+# pillow >=12.1.1 fixes CVE-2026-25990 and CVE-2026-59205 (out-of-bounds
+# write / read in image handling). Transitive via gradio.
+pillow>=12.3.0
+
+# msgpack >=1.2.1 fixes GHSA-6v7p-g79w-8964 (out-of-bounds read).
+msgpack>=1.2.2
 
 # ---- Configuration ----
-pydantic==2.10.4
-pydantic-settings==2.7.0
-python-dotenv==1.0.1
+pydantic>=2.10.4
+pydantic-settings>=2.7.0
+python-dotenv>=1.0.1

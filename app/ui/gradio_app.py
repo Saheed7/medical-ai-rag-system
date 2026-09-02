@@ -12,6 +12,8 @@ from app.rag.prompts import MEDICAL_DISCLAIMER
 
 logger = get_logger(__name__)
 
+# Gradio 6 renders examples inside the Chatbot itself, as dicts with a
+# "text" key, rather than through a separate gr.Examples block.
 EXAMPLE_QUESTIONS = [
     "What are the common symptoms of Type 2 diabetes?",
     "How is bacterial meningitis diagnosed?",
@@ -84,12 +86,9 @@ def respond(message: str, history: list[dict]) -> tuple[str, list[dict]]:
 
 def build_interface() -> gr.Blocks:
     """Construct the Gradio Blocks application."""
-    with gr.Blocks(
-        title=settings.app_name,
-        theme=gr.themes.Soft(primary_hue="teal", secondary_hue="slate"),
-        css=CUSTOM_CSS,
-        fill_height=True,
-    ) as demo:
+    # Gradio 6 moved `theme` and `css` off the Blocks constructor; they are
+    # now passed to launch() or mount_gradio_app(). See app/main.py.
+    with gr.Blocks(title=settings.app_name, fill_height=True) as demo:
 
         gr.Markdown(f"# {settings.app_name}")
         gr.Markdown(
@@ -102,12 +101,15 @@ def build_interface() -> gr.Blocks:
             f"{MEDICAL_DISCLAIMER}</div>"
         )
 
+        # Gradio 6 dropped `type`: the messages format is now the only one.
+        # `show_copy_button` was replaced by the `buttons` list, and examples
+        # are rendered by the Chatbot itself when it is empty.
         chatbot = gr.Chatbot(
-            type="messages",
             height=520,
-            show_copy_button=True,
-            avatar_images=(None, None),
             label="Conversation",
+            avatar_images=(None, None),
+            buttons=["copy"],
+            examples=[{"text": q} for q in EXAMPLE_QUESTIONS],
         )
 
         with gr.Row():
@@ -122,12 +124,6 @@ def build_interface() -> gr.Blocks:
 
         with gr.Row():
             clear_btn = gr.Button("Clear conversation", size="sm")
-
-        gr.Examples(
-            examples=EXAMPLE_QUESTIONS,
-            inputs=textbox,
-            label="Try one of these",
-        )
 
         with gr.Accordion("System configuration", open=False):
             gr.Markdown(
@@ -144,6 +140,12 @@ def build_interface() -> gr.Blocks:
             )
 
         # Wiring
+        def _from_example(evt: gr.SelectData, history: list[dict]):
+            """Chatbot examples emit a select event rather than filling the box."""
+            text = evt.value.get("text", "") if isinstance(evt.value, dict) else str(evt.value)
+            return respond(text, history)
+
+        chatbot.example_select(_from_example, [chatbot], [textbox, chatbot])
         textbox.submit(respond, [textbox, chatbot], [textbox, chatbot])
         submit_btn.click(respond, [textbox, chatbot], [textbox, chatbot])
         clear_btn.click(lambda: [], outputs=chatbot, queue=False)

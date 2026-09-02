@@ -19,6 +19,10 @@ pipeline {
     }
 
     environment {
+        // Captured by each stage so the post block can report the real
+        // failure point. env.STAGE_NAME inside post{} evaluates to the post
+        // block's own name, which is misleading.
+        FAILED_STAGE = ''
         AWS_REGION     = "${params.AWS_REGION}"
         ECR_REPO       = "${params.ECR_REPO}"
         IMAGE_TAG      = "${env.GIT_COMMIT.take(7)}"
@@ -44,6 +48,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
+                script { env.FAILED_STAGE = 'Checkout' }
                 checkout scm
                 sh 'git --no-pager log -1 --oneline'
             }
@@ -53,15 +58,18 @@ pipeline {
             // Mirrors the GitHub Actions job. Cheap, and fails before we spend
             // time building an image from code that does not lint or test.
             steps {
+                script { env.FAILED_STAGE = 'Quality gate' }
                 sh '''
                     set -eu
                     python3 -m venv .ci-venv
                     . .ci-venv/bin/activate
                     pip install --quiet --upgrade pip
+                    pip install --quiet --upgrade setuptools wheel
                     pip install --quiet ruff pytest pytest-cov \
-                        pydantic pydantic-settings langchain-core \
-                        langchain-text-splitters langchain-community \
-                        langchain-huggingface pypdf
+                        pydantic pydantic-settings 'langchain-core>=1.6.1' \
+                        'langchain-text-splitters>=1.0.0' \
+                        'langchain-community>=0.4.2' \
+                        'langchain-huggingface>=1.2.2' 'pypdf>=6.16.2'
                     ruff check app tests scripts
                     pytest -q --junitxml=pytest-report.xml
                 '''
@@ -76,6 +84,7 @@ pipeline {
             // in Git. The committed manifest pins an exact S3 object plus its
             // SHA-256, so every build uses byte-identical retrieval data.
             steps {
+                script { env.FAILED_STAGE = 'Fetch index artifact' }
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
                                   credentialsId: 'aws-credentials']]) {
                     sh '''
@@ -90,6 +99,7 @@ pipeline {
 
         stage('Build image') {
             steps {
+                script { env.FAILED_STAGE = 'Build image' }
                 sh '''
                     set -eu
                     docker build \
@@ -104,6 +114,7 @@ pipeline {
 
         stage('Security scan') {
             steps {
+                script { env.FAILED_STAGE = 'Security scan' }
                 sh '''
                     set -eu
                     mkdir -p reports
@@ -138,6 +149,7 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
+                script { env.FAILED_STAGE = 'Push to ECR' }
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
                                   credentialsId: 'aws-credentials']]) {
                     sh '''
@@ -171,6 +183,7 @@ pipeline {
         stage('Deploy to App Runner') {
             when { expression { params.DEPLOY } }
             steps {
+                script { env.FAILED_STAGE = 'Deploy to App Runner' }
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
                                   credentialsId: 'aws-credentials']]) {
                     sh '''
@@ -206,6 +219,6 @@ pipeline {
             cleanWs(deleteDirs: true, notFailBuild: true)
         }
         success { echo "Pipeline succeeded: ${env.ECR_REPO}:${env.IMAGE_TAG}" }
-        failure { echo "Pipeline failed at stage: ${env.STAGE_NAME}" }
+        failure { echo "Pipeline failed at stage: ${env.FAILED_STAGE ?: 'unknown'}" }
     }
 }
