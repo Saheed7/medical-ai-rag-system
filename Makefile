@@ -1,4 +1,4 @@
-.PHONY: help install install-dev index run test lint format ci docker-build docker-run docker-verify docker-size clean
+.PHONY: help install install-dev index run test lint format ci docker-build docker-run docker-verify docker-size jenkins-up jenkins-down jenkins-password clean
 
 help:
 	@echo "install       Install runtime dependencies"
@@ -44,6 +44,15 @@ docker-verify:
 
 docker-size:
 	docker image inspect medical-ai-rag-system:latest --format '{{.Size}}' | awk '{printf "image size: %.0f MB\n", $$1/1048576}'
+
+jenkins-up:
+	cd deploy/jenkins && docker compose up -d --build
+
+jenkins-down:
+	cd deploy/jenkins && docker compose down
+
+jenkins-password:
+	docker exec medical-rag-jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true

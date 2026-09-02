@@ -24,7 +24,12 @@ htmlcov/
 
 # ---- Project artefacts ----
 logs/
-vectorstore/
+# The index binaries are build artefacts fetched from S3, never committed.
+# The manifest that pins which artefact to fetch IS committed - it is the
+# contract between this repo and the S3 bucket.
+vectorstore/*
+!vectorstore/.gitkeep
+!vectorstore/INDEX_MANIFEST.json
 *.log
 trivy-report.*
 
