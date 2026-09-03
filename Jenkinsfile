@@ -102,13 +102,20 @@ pipeline {
                 script { env.FAILED_STAGE = 'Build image' }
                 sh '''
                     set -eu
-                    # --provenance/--sbom disabled: BuildKit attaches an
-                    # attestation that Trivy reads INSTEAD of the filesystem,
-                    # and it can report package versions that are not actually
-                    # in the image. Scanning the real layers is what we want.
-                    docker build \
-                        --provenance=false \
-                        --sbom=false \
+                    # Attestations are disabled so Trivy scans the real layers
+                    # rather than a BuildKit-generated SBOM. The --provenance and
+                    # --sbom flags only exist on buildx; this agent ships the
+                    # plain Docker CLI, where the legacy builder rejects them and
+                    # never produces attestations in the first place. Detect the
+                    # builder rather than assuming which one is present.
+                    if docker buildx version >/dev/null 2>&1; then
+                        BUILD_FLAGS="--provenance=false --sbom=false"
+                    else
+                        BUILD_FLAGS=""
+                        echo "buildx unavailable: using legacy builder (no attestations)"
+                    fi
+
+                    docker build ${BUILD_FLAGS} \
                         -t "${ECR_REPO}:${IMAGE_TAG}" \
                         -t "${ECR_REPO}:latest" \
                         .
