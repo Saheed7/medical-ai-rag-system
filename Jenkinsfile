@@ -38,8 +38,6 @@ pipeline {
                description: 'ECR repository name')
         string(name: 'ARTIFACT_BUCKET', defaultValue: '',
                description: 'S3 bucket holding the FAISS index artifact')
-        booleanParam(name: 'DEPLOY', defaultValue: false,
-               description: 'Deploy to App Runner after a successful push')
         booleanParam(name: 'FAIL_ON_VULNS', defaultValue: true,
                description: 'Fail the build on HIGH/CRITICAL findings')
     }
@@ -193,31 +191,23 @@ pipeline {
             }
         }
 
-        stage('Deploy to App Runner') {
-            when { expression { params.DEPLOY } }
+        stage('Deployment summary') {
             steps {
-                script { env.FAILED_STAGE = 'Deploy to App Runner' }
+                script { env.FAILED_STAGE = 'Deployment summary' }
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
                                   credentialsId: 'aws-credentials']]) {
                     sh '''
                         set -eu
-                        SERVICE_ARN=$(aws apprunner list-services \
+                        REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                        echo "Image published: ${REGISTRY}/${ECR_REPO}:${IMAGE_TAG}"
+                        aws ecr describe-images \
+                            --repository-name "${ECR_REPO}" \
                             --region "${AWS_REGION}" \
-                            --query "ServiceSummaryList[?ServiceName=='${ECR_REPO}'].ServiceArn" \
-                            --output text)
-
-                        if [ -z "${SERVICE_ARN}" ]; then
-                            echo "No App Runner service named '${ECR_REPO}' found."
-                            echo "Create it once in the console, then re-run with DEPLOY."
-                            exit 1
-                        fi
-
-                        aws apprunner start-deployment \
-                            --service-arn "${SERVICE_ARN}" \
-                            --region "${AWS_REGION}"
-                        echo "Deployment triggered for ${SERVICE_ARN}"
+                            --query 'sort_by(imageDetails,&imagePushedAt)[-1].{tags:imageTags,pushed:imagePushedAt,sizeMB:imageSizeInBytes}' \
+                            --output table
                     '''
                 }
+                echo "The public demo runs on Hugging Face Spaces and redeploys from its own git remote; see deploy/HF_SPACES.md."
             }
         }
     }

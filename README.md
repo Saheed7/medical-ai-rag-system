@@ -1,5 +1,4 @@
 # Medical AI RAG System
-[![CI](https://github.com/Saheed7/medical-ai-rag-system/actions/workflows/ci.yml/badge.svg)](https://github.com/Saheed7/medical-ai-rag-system/actions/workflows/ci.yml)
 
 A production-oriented **Retrieval-Augmented Generation (RAG)** service that answers
 medical questions strictly from an indexed reference corpus (*The Gale Encyclopedia
@@ -70,8 +69,8 @@ rather than inventing one.
 | Container | Docker |
 | CI/CD | Jenkins |
 | Security scan | Aqua Trivy |
-| Registry | AWS ECR |
-| Runtime | AWS App Runner |
+| Registry | AWS ECR (private) |
+| Public demo | Hugging Face Spaces |
 
 ---
 
@@ -115,7 +114,7 @@ medical-ai-rag-system/
 
 ```bash
 # 1. Clone and enter
-git clone https://github.com/<Saheed7>/medical-ai-rag-system.git
+git clone https://github.com/<your-username>/medical-ai-rag-system.git
 cd medical-ai-rag-system
 
 # 2. Virtual environment
@@ -206,6 +205,29 @@ pytest -v --cov=app --cov-report=term-missing
 Covers configuration validation, PDF text-cleaning heuristics, chunking
 invariants (sequential IDs, metadata preservation), prompt contracts, and
 citation formatting.
+
+---
+
+## Deployment
+
+The Jenkins pipeline publishes the production image to a **private ECR
+repository**. The public demo runs separately on Hugging Face Spaces.
+
+That split is deliberate. The FAISS index contains verbatim text from a
+copyrighted reference work, so it is never committed to a public repository or
+baked into a publicly distributed image. The demo image fetches the index from
+private S3 at startup and verifies its SHA-256 against the committed manifest;
+only the manifest metadata is public.
+
+| Concern | Where it lives |
+|---|---|
+| Deployable image | Private ECR, pushed by Jenkins per commit |
+| Index artefact | Private S3, pinned by `vectorstore/INDEX_MANIFEST.json` |
+| Secrets | Jenkins credential store / Space secrets, never in Git |
+| Public demo | Hugging Face Spaces, index fetched at runtime |
+
+See [`deploy/HF_SPACES.md`](deploy/HF_SPACES.md) for the demo deployment and
+[`deploy/jenkins/SETUP.md`](deploy/jenkins/SETUP.md) for the pipeline.
 
 ---
 
