@@ -1,0 +1,262 @@
+{
+  "corpus": "The Gale Encyclopedia of Medicine, 2nd ed.",
+  "note": "Each question is answerable from the labelled page. Labels were derived from the entry definitions on those pages and machine-verified: the anchor term appears in the extracted text of the labelled page. Re-verify with: python scripts/evaluate_retrieval.py --audit",
+  "questions": [
+    {
+      "id": "q01",
+      "question": "What do calcium channel blockers do?",
+      "relevant_pages": [
+        16
+      ],
+      "anchor": "calcium channel blockers"
+    },
+    {
+      "id": "q02",
+      "question": "What is cardiac catheterization used to diagnose?",
+      "relevant_pages": [
+        44
+      ],
+      "anchor": "cardiac catheterization"
+    },
+    {
+      "id": "q03",
+      "question": "What is a cataract?",
+      "relevant_pages": [
+        62
+      ],
+      "anchor": "cataract"
+    },
+    {
+      "id": "q04",
+      "question": "What is cervical disk disease?",
+      "relevant_pages": [
+        107
+      ],
+      "anchor": "cervical disk"
+    },
+    {
+      "id": "q05",
+      "question": "What does cholangitis mean?",
+      "relevant_pages": [
+        162
+      ],
+      "anchor": "cholangitis"
+    },
+    {
+      "id": "q06",
+      "question": "What is chondromalacia patellae?",
+      "relevant_pages": [
+        184
+      ],
+      "anchor": "chondromalacia"
+    },
+    {
+      "id": "q07",
+      "question": "What happens to liver cells in cirrhosis?",
+      "relevant_pages": [
+        203
+      ],
+      "anchor": "cirrhosis"
+    },
+    {
+      "id": "q08",
+      "question": "How does someone get coccidioidomycosis?",
+      "relevant_pages": [
+        223
+      ],
+      "anchor": "coccidioidomycosis"
+    },
+    {
+      "id": "q09",
+      "question": "What instrument is used during a colonoscopy?",
+      "relevant_pages": [
+        245
+      ],
+      "anchor": "colonoscopy"
+    },
+    {
+      "id": "q10",
+      "question": "How does a CT scan produce images?",
+      "relevant_pages": [
+        264
+      ],
+      "anchor": "computed tomography"
+    },
+    {
+      "id": "q11",
+      "question": "What is congenital lobar emphysema?",
+      "relevant_pages": [
+        282
+      ],
+      "anchor": "lobar emphysema"
+    },
+    {
+      "id": "q12",
+      "question": "What are corticosteroids?",
+      "relevant_pages": [
+        324
+      ],
+      "anchor": "corticosteroid"
+    },
+    {
+      "id": "q13",
+      "question": "What does the creatine kinase test measure?",
+      "relevant_pages": [
+        337
+      ],
+      "anchor": "creatine kinase"
+    },
+    {
+      "id": "q14",
+      "question": "Which organs does cystic fibrosis affect?",
+      "relevant_pages": [
+        373
+      ],
+      "anchor": "cystic fibrosis"
+    },
+    {
+      "id": "q15",
+      "question": "What is debridement?",
+      "relevant_pages": [
+        395
+      ],
+      "anchor": "debridement"
+    },
+    {
+      "id": "q16",
+      "question": "What is a delusion?",
+      "relevant_pages": [
+        410
+      ],
+      "anchor": "delusion"
+    },
+    {
+      "id": "q17",
+      "question": "What are dissociative disorders?",
+      "relevant_pages": [
+        473
+      ],
+      "anchor": "dissociative"
+    },
+    {
+      "id": "q18",
+      "question": "What is dry mouth known as medically?",
+      "relevant_pages": [
+        497
+      ],
+      "anchor": "xerostomia"
+    },
+    {
+      "id": "q19",
+      "question": "What causes echinococcosis?",
+      "relevant_pages": [
+        514
+      ],
+      "anchor": "echinococcosis"
+    },
+    {
+      "id": "q20",
+      "question": "What does electrocardiography record?",
+      "relevant_pages": [
+        534
+      ],
+      "anchor": "electrocardiograph"
+    },
+    {
+      "id": "q21",
+      "question": "What is elephantiasis?",
+      "relevant_pages": [
+        553
+      ],
+      "anchor": "elephantiasis"
+    },
+    {
+      "id": "q22",
+      "question": "Where does endometrial cancer develop?",
+      "relevant_pages": [
+        575
+      ],
+      "anchor": "endometrial cancer"
+    },
+    {
+      "id": "q23",
+      "question": "What is an enterostomy?",
+      "relevant_pages": [
+        596
+      ],
+      "anchor": "enterostomy"
+    },
+    {
+      "id": "q24",
+      "question": "What is the Epstein-Barr virus test?",
+      "relevant_pages": [
+        610
+      ],
+      "anchor": "epstein-barr"
+    },
+    {
+      "id": "q25",
+      "question": "What is esophageal atresia?",
+      "relevant_pages": [
+        625
+      ],
+      "anchor": "esophageal atresia"
+    },
+    {
+      "id": "q26",
+      "question": "What do expectorants do?",
+      "relevant_pages": [
+        640
+      ],
+      "anchor": "expectorant"
+    },
+    {
+      "id": "q27",
+      "question": "What is fasting?",
+      "relevant_pages": [
+        678
+      ],
+      "anchor": "fasting"
+    },
+    {
+      "id": "q28",
+      "question": "What is fetal hemoglobin?",
+      "relevant_pages": [
+        698
+      ],
+      "anchor": "fetal hemoglobin"
+    },
+    {
+      "id": "q29",
+      "question": "What is fibromyalgia?",
+      "relevant_pages": [
+        712
+      ],
+      "anchor": "fibromyalgia"
+    },
+    {
+      "id": "q30",
+      "question": "What is fracture repair?",
+      "relevant_pages": [
+        746
+      ],
+      "anchor": "fracture repair"
+    },
+    {
+      "id": "q31",
+      "question": "What do central nervous system stimulants do?",
+      "relevant_pages": [
+        80
+      ],
+      "anchor": "stimulant"
+    },
+    {
+      "id": "q32",
+      "question": "What is removed during chest drainage therapy?",
+      "relevant_pages": [
+        132
+      ],
+      "anchor": "chest drainage"
+    }
+  ]
+}

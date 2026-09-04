@@ -8,3 +8,8 @@ black>=24.10.0
 # Patched setuptools: CVE-2025-47273 and vendored wheel CVE-2026-24049.
 setuptools>=78.1.1
 wheel>=0.46.0
+
+# Evaluation figures (scripts/plot_eval.py, evaluate_answerability.py --plot).
+# Dev-only: the runtime image never plots, so this stays out of
+# requirements.txt and adds nothing to the deployed container.
+matplotlib>=3.8

@@ -56,7 +56,10 @@ class Settings(BaseSettings):
     # ----- Retrieval -----------------------------------------------------
     retrieval_top_k: int = 4
     retrieval_fetch_k: int = 20
-    retrieval_strategy: str = Field(default="mmr")  # "mmr" | "similarity"
+    # Default chosen by measurement, not assumption. On the 32-question
+    # evaluation set, plain similarity beats MMR at every k > 1
+    # (96.9% vs 87.5% hit rate at k=4). See eval/README.md.
+    retrieval_strategy: str = Field(default="similarity")  # "mmr" | "similarity"
     mmr_lambda: float = 0.5
 
     # ----- LLM -----------------------------------------------------------
