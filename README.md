@@ -1,4 +1,5 @@
 # Medical AI RAG System
+**[Live demo](https://huggingface.co/spaces/Kayodenet/medical-ai-rag-system)** · [CI](https://github.com/Saheed7/medical-ai-rag-system/actions)
 
 A production-oriented **Retrieval-Augmented Generation (RAG)** service that answers
 medical questions strictly from an indexed reference corpus (*The Gale Encyclopedia
